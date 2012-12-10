@@ -71,7 +71,7 @@ Custom Status Checks
 Checks should accept the request object and return
 two values. The name of the key/node to be displayed
 and the value of the check. The value should be anything
-that can be serialized.:
+that can be serialized.::
 
     def check_sample(request):
         #...do some things...
