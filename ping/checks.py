@@ -45,3 +45,24 @@ def check_database_sites(request):
         return 'db_site', True
     except:
         return 'db_site', False
+        
+def check_cache_set(request):        
+    from django.core.cache import cache
+    try:
+        cache.set('django-ping-test', 'abc123', 30)
+        return 'cache_set', True
+    except:
+        return 'cache_set', False
+
+def check_cache_get(request):        
+    from django.core.cache import cache
+    try:
+        data = cache.get('django-ping-test')
+        if data == 'abc123':
+            return 'cache_get', True
+        else:
+            return 'cache_get', False
+    except:
+        return 'cache_get', False
+
+
