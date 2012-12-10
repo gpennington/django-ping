@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-version = '0.1'
+version = '0.1.0'
 
-setup(name='ping',
+setup(name='django-ping',
       version=version,
-      description="Monitoring and Availability Utility",
+      description="Django Monitoring and Availability Utility",
       long_description="",
       classifiers=[
           "Development Status :: 1 - Planning",
