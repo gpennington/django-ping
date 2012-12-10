@@ -30,22 +30,6 @@ def checks(request):
 
     return response_dict
     
-
-"""
-Sample check method
-
-Checks accept the request object and return
-two values. The name of the key/node to be displayed
-and the value of the check. The value should be anything
-that can be serialized.
-
-def check_sample():
-    #...do some things...
-    return 'foo', True
-    #or
-    return 'bar', ['one', 'two', 'three', {'a':1, 'b':2, 'c':3}]
-"""
-
 def check_database_sessions(request):
     from django.contrib.sessions.models import Session
     try:
