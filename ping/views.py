@@ -15,7 +15,7 @@ def status(request):
     mimetype = getattr(settings, 'PING_DEFAULT_MIMETYPE', PING_DEFAULT_MIMETYPE)
     
     if request.GET.get('fmt') == 'json':
-        response_dict = checks()
+        response_dict = checks(request)
         response = simplejson.dumps(response_dict)
         mimetype = 'application/json'
         
