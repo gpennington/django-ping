@@ -1,10 +1,10 @@
 from django.http import HttpResponse
 from django.conf import settings
 from django.utils import simplejson
-from django.core.exceptions import ImproperlyConfigured
 
 from ping.defaults import *
 from ping.checks import checks
+
 
 def status(request):
     """
@@ -17,7 +17,6 @@ def status(request):
     if request.GET.get('fmt') == 'json':
         response_dict = checks(request)
         response = simplejson.dumps(response_dict)
-        mimetype = 'application/json'
-        
-    return HttpResponse(response, mimetype=mimetype, status=200)
+        mimetype = 'application/json'  
 
+    return HttpResponse(response, mimetype=mimetype, status=200)
