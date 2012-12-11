@@ -2,7 +2,7 @@ Django Ping
 ===========
 
 Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It 
-also provides hooks for testing stack components and reporting them via JSON or XML.
+also provides hooks for testing stack components and reporting them via JSON.
 
 Installation
 ------------
@@ -13,7 +13,7 @@ Use pip to download and install::
 
 Add Django Ping to url conf::
 
-        url(r'^ping/', include('ping.urls')),
+    url(r'^ping/', include('ping.urls')),
 
 Configuration and Use
 ---------------------
@@ -25,7 +25,6 @@ Hitting the endpoint returns a simple status 200 response.
 You can customize the message by adding to your Django settings::
 
     PING_DEFAULT_RESPONSE = "Your site is up!"
-    PING_DEFAULT_MIMETYPE = 'text/html'
 
 Hitting the url::
 
@@ -84,15 +83,7 @@ that can be serialized.::
 Then, add that to the ``PING_CHECKS`` tuple to display::
 
     {
+        ...
         'foo', true
     }
-or:
 
-    <foo>True</foo>
-
-Docs
-----
-
-Check out the full documentation.
-
-...soon...
