@@ -11,11 +11,18 @@ def status(request):
     Returns a simple HttpResponse
     """
     
-    response = getattr(settings, 'PING_DEFAULT_RESPONSE', PING_DEFAULT_RESPONSE)
+    response = "<h1>%s</h1>" % getattr(settings, 'PING_DEFAULT_RESPONSE', PING_DEFAULT_RESPONSE)
     mimetype = getattr(settings, 'PING_DEFAULT_MIMETYPE', PING_DEFAULT_MIMETYPE)
     
-    if request.GET.get('fmt') == 'json':
+    if request.GET.get('checks') == 'true':
         response_dict = checks(request)
+        response += "<dl>"
+        for key, value in response_dict.items():
+            response += "<dt>%s</dt>" % str(key)
+            response += "<dd>%s</dd>" % str(value)
+        response += "</dl>"
+
+    if request.GET.get('fmt') == 'json':
         response = simplejson.dumps(response_dict)
         mimetype = 'application/json'  
 
