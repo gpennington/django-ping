@@ -2,7 +2,7 @@ Django Ping
 ===========
 
 Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It 
-also provides hooks for testing stack components and reporting them via JSON or XML.
+also provides hooks for testing stack components and reporting them via JSON.
 
 Installation
 ------------
@@ -24,7 +24,7 @@ Basic
 Hitting the endpoint returns a simple status 200 response.
 You can customize the message by adding to your Django settings::
 
-    PING_DEFAULT_RESPONSE = "Your site is up!"
+    PING_DEFAULT_RESPONSE = "All systems go!"
     PING_DEFAULT_MIMETYPE = 'text/html'
 
 Hitting the url::
@@ -33,22 +33,23 @@ Hitting the url::
     
 displays::
 
-    Your site is up!
+    All systems go!
 
 Advanced
 ~~~~~~~~
 
-Specifying a ``fmt`` paramter returns more detailed and serialized data.
+Adding a ``checks=true`` parameter to the url tells Django Ping to run
+a series of systems checks and reports the results.
+
 For example::
 
-    /ping?fmt=json
+    /ping?checks=true
     
 displays::
 
-    {
-        "db_sessions": true,
-        "db_site": true
-    }
+    Your site is up!
+    db_sessions True
+    db_site True
 
 By default, Django Ping tests that your Database is responding
 by using supplying two tests.  You can supply your own tests
@@ -65,11 +66,24 @@ To customize, include a tuple in your Django settings::
         'my_other_app.some_module.some_function'
     )
 
+
+Specifying a ``fmt`` parameter to ``json`` returns more detailed and serialized data.
+For example::
+
+    /ping?fmt=json
+    
+displays::
+
+    {
+        "db_sessions": true,
+        "db_site": true
+    }
+
 Custom Status Checks
 ~~~~~~~~~~~~~~~~~~~~
 
 Checks should accept the request object and return
-two values. The name of the key/node to be displayed
+two values. The name/key to be displayed
 and the value of the check. The value should be anything
 that can be serialized.::
 
@@ -86,13 +100,24 @@ Then, add that to the ``PING_CHECKS`` tuple to display::
     {
         'foo', true
     }
-or:
 
-    <foo>True</foo>
 
-Docs
-----
+Included Status Checks
+~~~~~~~~~~~~~~~~~~~~~~
 
-Check out the full documentation.
+Django Ping includes a few checks to test various components
+live.
 
-...soon...
+**check_database_sessions** - Hits your database and attempts to retrieve a single session.
+**check_database_sites** - Hits your database and attempts to retrieve a single site instance.
+**check_cache_set** - Attempts to cache a value using the current cache backend defined.
+**check_cache_get** - Attempts to retrieve a cached value using the current cache backend defined.
+
+What's Next?
+------------
+
+Go sign up for a monitoring service or role your own.
+
+https://www.pingdom.com/
+http://www.panopta.com/
+http://binarycanary.com/
