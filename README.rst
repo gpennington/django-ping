@@ -109,8 +109,11 @@ Django Ping includes a few checks to test various components
 live.
 
 **check_database_sessions** - Hits your database and attempts to retrieve a single session.
+
 **check_database_sites** - Hits your database and attempts to retrieve a single site instance.
+
 **check_cache_set** - Attempts to cache a value using the current cache backend defined.
+
 **check_cache_get** - Attempts to retrieve a cached value using the current cache backend defined.
 
 What's Next?
@@ -119,5 +122,7 @@ What's Next?
 Go sign up for a monitoring service or role your own.
 
 https://www.pingdom.com/
+
 http://www.panopta.com/
+
 http://binarycanary.com/
