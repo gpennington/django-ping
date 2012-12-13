@@ -5,3 +5,5 @@ PING_DEFAULT_CHECKS = (
     'ping.checks.check_database_sessions',
     'ping.checks.check_database_sites',
 )
+
+PING_BASIC_AUTH = False
