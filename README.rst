@@ -15,11 +15,8 @@ Add Django Ping to url conf::
 
         url(r'^ping/', include('ping.urls')),
 
-Configuration and Use
----------------------
-
-Basic
-~~~~~
+Basic Configuration
+-------------------
 
 Hitting the endpoint returns a simple status 200 response.
 You can customize the message by adding to your Django settings::
@@ -35,11 +32,14 @@ displays::
 
     All systems go!
 
-Advanced
-~~~~~~~~
+Advanced Configuration
+----------------------
+
+Enable Status Checks
+~~~~~~~~~~~~~~~~~~~~
 
 Adding a ``checks=true`` parameter to the url tells Django Ping to run
-a series of systems checks and reports the results.
+a series of status checks and reports the results.
 
 For example::
 
@@ -115,6 +115,16 @@ live.
 **check_cache_set** - Attempts to cache a value using the current cache backend defined.
 
 **check_cache_get** - Attempts to retrieve a cached value using the current cache backend defined.
+
+
+Authentication
+~~~~~~~~~~~~~~
+
+You can require HTTP Basic authentication to access the ping endpoint,
+set ``PING_BASIC_AUTH`` to ``True`` in your Django settings.
+
+Provide in the request the username/password of a valid User.
+
 
 What's Next?
 ------------
