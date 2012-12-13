@@ -38,17 +38,18 @@ displays::
 Advanced
 ~~~~~~~~
 
-Specifying a ``fmt`` paramter returns more detailed and serialized data.
+Adding a ``checks=true`` parameter to the url tells Django Ping to run
+a series of systems checks and reports the results.
+
 For example::
 
-    /ping?fmt=json
+    /ping?checks=true
     
 displays::
 
-    {
-        "db_sessions": true,
-        "db_site": true
-    }
+    Your site is up!
+    db_sessions True
+    db_site True
 
 By default, Django Ping tests that your Database is responding
 by using supplying two tests.  You can supply your own tests
@@ -65,11 +66,24 @@ To customize, include a tuple in your Django settings::
         'my_other_app.some_module.some_function'
     )
 
+
+Specifying a ``fmt`` parameter to ``json`` returns more detailed and serialized data.
+For example::
+
+    /ping?fmt=json
+    
+displays::
+
+    {
+        "db_sessions": true,
+        "db_site": true
+    }
+
 Custom Status Checks
 ~~~~~~~~~~~~~~~~~~~~
 
 Checks should accept the request object and return
-two values. The name of the key/node to be displayed
+two values. The name/key to be displayed
 and the value of the check. The value should be anything
 that can be serialized.::
 
