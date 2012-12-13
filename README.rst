@@ -24,7 +24,8 @@ Basic
 Hitting the endpoint returns a simple status 200 response.
 You can customize the message by adding to your Django settings::
 
-    PING_DEFAULT_RESPONSE = "Your site is up!"
+    PING_DEFAULT_RESPONSE = "All systems go!"
+    PING_DEFAULT_MIMETYPE = 'text/html'
 
 Hitting the url::
 
@@ -32,7 +33,7 @@ Hitting the url::
     
 displays::
 
-    Your site is up!
+    All systems go!
 
 Advanced
 ~~~~~~~~
@@ -87,3 +88,28 @@ Then, add that to the ``PING_CHECKS`` tuple to display::
         'foo', true
     }
 
+
+Included Status Checks
+~~~~~~~~~~~~~~~~~~~~~~
+
+Django Ping includes a few checks to test various components
+live.
+
+**check_database_sessions** - Hits your database and attempts to retrieve a single session.
+
+**check_database_sites** - Hits your database and attempts to retrieve a single site instance.
+
+**check_cache_set** - Attempts to cache a value using the current cache backend defined.
+
+**check_cache_get** - Attempts to retrieve a cached value using the current cache backend defined.
+
+What's Next?
+------------
+
+Go sign up for a monitoring service or role your own.
+
+https://www.pingdom.com/
+
+http://www.panopta.com/
+
+http://binarycanary.com/
