@@ -4,6 +4,9 @@ Django Ping
 Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It 
 also provides hooks for testing stack components and reporting them via JSON.
 
+Current VersionL 0.3.0
+https://github.com/gpennington/django-ping
+
 Installation
 ------------
 
