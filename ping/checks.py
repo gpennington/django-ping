@@ -84,22 +84,3 @@ def check_user_exists(request):
         return 'user_exists', True
     except:
         return 'user_exists', False
-
-
-#Post Example
-def check_create_user(request):
-    from django.contrib.auth.models import User
-    try:
-        if request.method == 'POST':
-            username = request.GET.get('username')
-            u, created = User.objects.get_or_create(username=username)
-            if created:
-                return 'create_user', True
-            else:
-                u.delete()
-                new_user = User.objects.create(username=username)
-                return 'create_user', True
-        else:
-            return 'create_user', False
-    except:
-        return 'create_user', False
