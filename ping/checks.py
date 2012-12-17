@@ -30,7 +30,10 @@ def checks(request):
             response_dict[key] = value
 
     return response_dict
-    
+
+#DEFAULT SYSTEM CHECKS
+
+#Database    
 def check_database_sessions(request):
     from django.contrib.sessions.models import Session
     try:
@@ -72,3 +75,12 @@ def check_cache_get(request):
         return 'cache_get', False
 
 
+#User
+def check_user_exists(request):        
+    from django.contrib.auth.models import User
+    try:
+        username = request.GET.get('username')
+        u = User.objects.get(username=username)
+        return 'user_exists', True
+    except:
+        return 'user_exists', False
