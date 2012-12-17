@@ -4,6 +4,9 @@ Django Ping
 Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It 
 also provides hooks for testing stack components and reporting them via JSON.
 
+Current VersionL 0.3.0
+https://github.com/gpennington/django-ping
+
 Installation
 ------------
 
@@ -100,6 +103,23 @@ Then, add that to the ``PING_CHECKS`` tuple to display::
     {
         'foo', true
     }
+
+You can send ``POST`` requests too. As an example::
+
+    def check_create_user(request):
+        from django.contrib.auth.models import User
+        try:
+            if request.method == 'POST':
+                username = request.GET.get('username')
+                u, created = User.objects.get_or_create(username=username)
+                if created:
+                    return 'create_user', "User: %s has been created" % u.username
+                else:
+                    return 'create_user', "User: %s already exists" % u.username
+            else:
+                return 'create_user', "User cannot be created with GET"
+        except:
+            return 'create_user', "User not created"
 
 
 Included Status Checks

@@ -2,11 +2,13 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from ping.defaults import *
 from ping.checks import checks
 from ping.decorators import http_basic_auth
 
+@csrf_exempt
 @http_basic_auth
 def status(request):
     """
