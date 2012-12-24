@@ -84,3 +84,24 @@ def check_user_exists(request):
         return 'user_exists', True
     except:
         return 'user_exists', False
+
+
+#Celery
+def check_celery(request):
+    from datetime import datetime, timedelta
+    from time import sleep
+    from ping.tasks import sample_task
+
+    now = datetime.now()
+    expires = now + timedelta(seconds=5)#settings
+
+    try:
+        task = sample_task.apply_async(expires=expires)
+        while expires > datetime.now():
+            if task.ready() and task.result == True:
+                return 'celery', True
+            sleep(0.2)
+        return 'celery', False
+    except Exception, e:
+        print e
+        return 'celery', False
