@@ -136,6 +136,8 @@ live.
 
 **check_cache_get** - Attempts to retrieve a cached value using the current cache backend defined.
 
+**check_celery** - Adds a task to the queue and checks for celery to complete it.
+
 
 Authentication
 ~~~~~~~~~~~~~~
@@ -144,6 +146,17 @@ You can require HTTP Basic authentication to access the ping endpoint,
 set ``PING_BASIC_AUTH`` to ``True`` in your Django settings.
 
 Provide in the request the username/password of a valid User.
+
+Complete Settings List
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check ``ping.defaults`` for default values.
+
+PING_RESPONSE = "Some string"
+PING_MIMETYPE = 'text/html' or valid content type
+PING_DEFAULT_CHECKS  = tuple of paths to check methods
+PING_BASIC_AUTH = Boolean (default is False)
+PING_CELERY_TIMEOUT = In seconds as integers (5 is default) 
 
 
 What's Next?
