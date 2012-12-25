@@ -93,7 +93,7 @@ def check_celery(request):
     from ping.tasks import sample_task
 
     now = datetime.now()
-    expires = now + timedelta(seconds=5)#settings
+    expires = now + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
 
     try:
         task = sample_task.apply_async(expires=expires)
