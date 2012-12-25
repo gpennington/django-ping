@@ -89,19 +89,20 @@ def check_user_exists(request):
 #Celery
 def check_celery(request):
     from datetime import datetime, timedelta
-    from time import sleep
+    from time import sleep, time
     from ping.tasks import sample_task
 
-    now = datetime.now()
-    expires = now + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
-
+    now = time()
+    datetimenow = datetime.now()
+    expires = datetimenow + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
+    
     try:
         task = sample_task.apply_async(expires=expires)
         while expires > datetime.now():
             if task.ready() and task.result == True:
-                return 'celery', True
-            sleep(0.2)
-        return 'celery', False
-    except Exception, e:
-        print e
-        return 'celery', False
+                finished = str(time() - now)
+                return 'celery', { 'success': True, 'time':finished }
+            sleep(0.25)
+        return 'celery', { 'success': False }
+    except Exception:
+        return 'celery', { 'success': False }
