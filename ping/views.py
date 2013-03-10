@@ -19,7 +19,7 @@ def status(request):
     if request.GET.get('checks') == 'true':
         response_dict = checks(request)
         response += "<dl>"
-        for key, value in response_dict.items():
+        for key, value in sorted(response_dict.items()):
             response += "<dt>%s</dt>" % str(key)
             response += "<dd>%s</dd>" % str(value)
         response += "</dl>"
@@ -30,7 +30,7 @@ def status(request):
         except UnboundLocalError:
             response_dict = checks(request)
             response = simplejson.dumps(response_dict)
-        response = simplejson.dumps(response_dict)
+        response = simplejson.dumps(response_dict, sort_keys=True)
         mimetype = 'application/json'  
 
     return HttpResponse(response, mimetype=mimetype, status=200)
