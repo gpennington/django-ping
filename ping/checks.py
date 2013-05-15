@@ -1,3 +1,5 @@
+from time import time
+
 from django.conf import settings
 from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
@@ -26,10 +28,13 @@ def checks(request):
             except AttributeError:
                 raise ImproperlyConfigured('Module "%s" does not define a "%s" callable' % (module, attr))
             
-            key, value = func(request)
-            response_dict[key] = value
 
+            #TODO, class or function
+            foo = func(request)
+            response_dict.update(foo._check(request))
+            
     return response_dict
+
 
 #DEFAULT SYSTEM CHECKS
 
@@ -42,67 +47,71 @@ def check_database_sessions(request):
     except:
         return 'db_sessions', False
 
-def check_database_sites(request):
-    from django.contrib.sites.models import Site
-    try:
-        session = Site.objects.all()[0]
-        return 'db_site', True
-    except:
-        return 'db_site', False
+
+class Check(object):
+
+    def __init__(self, request):
+        pass
+    
+    def _check(self, request):
+        if hasattr(self, 'key'):
+            response = {}
+            start = time()
+            
+            response[self.key] = self.check(request)
+
+            finished = str(time() - start)
+            response['time'] = finished
+            return response
+        else:
+            raise AttributeError("Class %s must define a 'key' value" % self.__class__.__name__)
+        
+    def check(self, request):
+        return {}
+
+
+class CheckDatabaseSessions(Check):
+    key = 'db_sessions'
+    def check(self, request):
+        try:
+            session = Session.objects.all()[0]
+            return {'success': True}
+        except:
+            return {'success': False}
+
+from django.contrib.sites.models import Site
+class CheckDatabaseSites(Check):
+    key = 'db_sites'
+    def check(self, request):
+        try:
+            session = Site.objects.all()[0]
+            return {'success':True}
+        except:
+            return {'success': False}
 
 
 #Caching
 CACHE_KEY = 'django-ping-test'
 CACHE_VALUE = 'abc123'
 
-def check_cache_set(request):        
-    from django.core.cache import cache
-    try:
-        cache.set(CACHE_KEY, CACHE_VALUE, 30)
-        return 'cache_set', True
-    except:
-        return 'cache_set', False
+from django.core.cache import cache
+class CheckCacheSet(Check):
+    key = 'cache_set'
+    def check(self, request):
+        try:
+            cache.set(CACHE_KEY, CACHE_VALUE, 30)
+            return {'success':True}
+        except:
+            return {'success': False}
 
-def check_cache_get(request):        
-    from django.core.cache import cache
-    try:
-        data = cache.get(CACHE_KEY)
-        if data == CACHE_VALUE:
-            return 'cache_get', True
-        else:
-            return 'cache_get', False
-    except:
-        return 'cache_get', False
-
-
-#User
-def check_user_exists(request):        
-    from django.contrib.auth.models import User
-    try:
-        username = request.GET.get('username')
-        u = User.objects.get(username=username)
-        return 'user_exists', True
-    except:
-        return 'user_exists', False
-
-
-#Celery
-def check_celery(request):
-    from datetime import datetime, timedelta
-    from time import sleep, time
-    from ping.tasks import sample_task
-
-    now = time()
-    datetimenow = datetime.now()
-    expires = datetimenow + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
-    
-    try:
-        task = sample_task.apply_async(expires=expires)
-        while expires > datetime.now():
-            if task.ready() and task.result == True:
-                finished = str(time() - now)
-                return 'celery', { 'success': True, 'time':finished }
-            sleep(0.25)
-        return 'celery', { 'success': False }
-    except Exception:
-        return 'celery', { 'success': False }
+class CheckCacheGet(Check):
+    key = 'cache_get'
+    def check(self, request):
+        try:
+            data = cache.get(CACHE_KEY)
+            if data == CACHE_VALUE:
+                return {'success':True}
+            else:
+                return {'success':False}
+        except:
+            return {'success': False}
