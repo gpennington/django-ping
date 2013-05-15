@@ -91,15 +91,12 @@ class CheckDatabaseSites(Check):
 
 
 #Caching
-CACHE_KEY = 'django-ping-test'
-CACHE_VALUE = 'abc123'
-
 from django.core.cache import cache
 class CheckCacheSet(Check):
     key = 'cache_set'
     def check(self, request):
         try:
-            cache.set(CACHE_KEY, CACHE_VALUE, 30)
+            cache.set(getattr(settings, 'PING_CACHE_KEY', PING_CACHE_KEY), getattr(settings, 'PING_CACHE_VALUE', PING_CACHE_VALUE), 30)
             return {'success':True}
         except:
             return {'success': False}
@@ -108,8 +105,8 @@ class CheckCacheGet(Check):
     key = 'cache_get'
     def check(self, request):
         try:
-            data = cache.get(CACHE_KEY)
-            if data == CACHE_VALUE:
+            data = cache.get(getattr(settings, 'PING_CACHE_KEY', PING_CACHE_KEY))
+            if data == getattr(settings, 'PING_CACHE_VALUE', PING_CACHE_VALUE):
                 return {'success':True}
             else:
                 return {'success':False}
