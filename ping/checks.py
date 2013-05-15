@@ -4,6 +4,11 @@ from django.conf import settings
 from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 
+#Check requirements
+from django.core.cache import cache
+from django.contrib.sites.models import Site
+from django.contrib.sessions.models import Session
+
 from ping.defaults import *
 
 def checks(request):
@@ -36,18 +41,6 @@ def checks(request):
     return response_dict
 
 
-#DEFAULT SYSTEM CHECKS
-
-#Database    
-def check_database_sessions(request):
-    from django.contrib.sessions.models import Session
-    try:
-        session = Session.objects.all()[0]
-        return 'db_sessions', True
-    except:
-        return 'db_sessions', False
-
-
 class Check(object):
 
     def __init__(self, request):
@@ -61,7 +54,7 @@ class Check(object):
             response[self.key] = self.check(request)
 
             finished = str(time() - start)
-            response['time'] = finished
+            response[self.key]['time'] = finished
             return response
         else:
             raise AttributeError("Class %s must define a 'key' value" % self.__class__.__name__)
@@ -70,6 +63,8 @@ class Check(object):
         return {}
 
 
+#DEFAULT SYSTEM CHECKS
+#Database
 class CheckDatabaseSessions(Check):
     key = 'db_sessions'
     def check(self, request):
@@ -79,7 +74,6 @@ class CheckDatabaseSessions(Check):
         except:
             return {'success': False}
 
-from django.contrib.sites.models import Site
 class CheckDatabaseSites(Check):
     key = 'db_sites'
     def check(self, request):
@@ -89,9 +83,7 @@ class CheckDatabaseSites(Check):
         except:
             return {'success': False}
 
-
 #Caching
-from django.core.cache import cache
 class CheckCacheSet(Check):
     key = 'cache_set'
     def check(self, request):
