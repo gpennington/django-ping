@@ -1,3 +1,4 @@
+import inspect
 from time import time
 
 from django.conf import settings
@@ -29,14 +30,19 @@ def checks(request):
             except ImportError as e:
                 raise ImproperlyConfigured('Error importing module %s: "%s"' % (module, e))
             try:
-                func = getattr(mod, attr)
+                check = getattr(mod, attr)
             except AttributeError:
                 raise ImproperlyConfigured('Module "%s" does not define a "%s" callable' % (module, attr))
             
 
-            #TODO, class or function
-            foo = func(request)
-            response_dict.update(foo._check(request))
+            #If check is a class, create instance of it and call
+            #the _check method
+            #Otherwise, just call the check directly
+            if inspect.isclass(check):
+                instance = check(request)
+                response_dict.update(instance._check(request))
+            else:
+                check(request)
             
     return response_dict
 
