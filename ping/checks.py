@@ -61,9 +61,11 @@ class Check(object):
 
             finished = str(time() - start)
             response[self.key]['time'] = finished
+            if hasattr(self, 'description'):
+                response[self.key]['description'] = self.description
             return response
         else:
-            raise AttributeError("Class %s must define a 'key' value" % self.__class__.__name__)
+            raise AttributeError("Class %s must define a 'key' value." % self.__class__.__name__)
         
     def check(self, request):
         return {}
@@ -73,6 +75,7 @@ class Check(object):
 #Database
 class CheckDatabaseSessions(Check):
     key = 'db_sessions'
+    description = "Queries the database for a Session."
     def check(self, request):
         try:
             session = Session.objects.all()[0]
@@ -82,6 +85,7 @@ class CheckDatabaseSessions(Check):
 
 class CheckDatabaseSites(Check):
     key = 'db_sites'
+    description = "Queries the database for a Site entry."
     def check(self, request):
         try:
             session = Site.objects.all()[0]
@@ -92,6 +96,7 @@ class CheckDatabaseSites(Check):
 #Caching
 class CheckCacheSet(Check):
     key = 'cache_set'
+    description = "Attempts to cache a value."
     def check(self, request):
         try:
             cache.set(getattr(settings, 'PING_CACHE_KEY', PING_CACHE_KEY), getattr(settings, 'PING_CACHE_VALUE', PING_CACHE_VALUE), 30)
@@ -101,6 +106,7 @@ class CheckCacheSet(Check):
 
 class CheckCacheGet(Check):
     key = 'cache_get'
+    description = "Attempts to retreive a cached value."
     def check(self, request):
         try:
             data = cache.get(getattr(settings, 'PING_CACHE_KEY', PING_CACHE_KEY))
