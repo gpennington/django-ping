@@ -4,6 +4,9 @@ Django Ping
 Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It 
 also provides hooks for testing stack components and reporting them via JSON.
 
+Current Version: 0.3.0
+https://github.com/gpennington/django-ping
+
 Installation
 ------------
 
@@ -102,6 +105,23 @@ Then, add that to the ``PING_CHECKS`` tuple to display::
         'foo', true
     }
 
+You can send ``POST`` requests too. As an example::
+
+    def check_create_user(request):
+        from django.contrib.auth.models import User
+        try:
+            if request.method == 'POST':
+                username = request.GET.get('username')
+                u, created = User.objects.get_or_create(username=username)
+                if created:
+                    return 'create_user', "User: %s has been created" % u.username
+                else:
+                    return 'create_user', "User: %s already exists" % u.username
+            else:
+                return 'create_user', "User cannot be created with GET"
+        except:
+            return 'create_user', "User not created"
+
 
 Included Status Checks
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -117,6 +137,8 @@ live.
 
 **check_cache_get** - Attempts to retrieve a cached value using the current cache backend defined.
 
+**check_celery** - Adds a task to the queue and checks for celery to complete it.
+
 
 Authentication
 ~~~~~~~~~~~~~~
@@ -125,6 +147,17 @@ You can require HTTP Basic authentication to access the ping endpoint,
 set ``PING_BASIC_AUTH`` to ``True`` in your Django settings.
 
 Provide in the request the username/password of a valid User.
+
+Complete Settings List
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check ``ping.defaults`` for default values.
+
+PING_RESPONSE = "Some string"
+PING_MIMETYPE = 'text/html' or valid content type
+PING_DEFAULT_CHECKS  = tuple of paths to check methods
+PING_BASIC_AUTH = Boolean (default is False)
+PING_CELERY_TIMEOUT = In seconds as integers (5 is default) 
 
 
 What's Next?

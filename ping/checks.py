@@ -30,7 +30,10 @@ def checks(request):
             response_dict[key] = value
 
     return response_dict
-    
+
+#DEFAULT SYSTEM CHECKS
+
+#Database    
 def check_database_sessions(request):
     from django.contrib.sessions.models import Session
     try:
@@ -72,3 +75,34 @@ def check_cache_get(request):
         return 'cache_get', False
 
 
+#User
+def check_user_exists(request):        
+    from django.contrib.auth.models import User
+    try:
+        username = request.GET.get('username')
+        u = User.objects.get(username=username)
+        return 'user_exists', True
+    except:
+        return 'user_exists', False
+
+
+#Celery
+def check_celery(request):
+    from datetime import datetime, timedelta
+    from time import sleep, time
+    from ping.tasks import sample_task
+
+    now = time()
+    datetimenow = datetime.now()
+    expires = datetimenow + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
+    
+    try:
+        task = sample_task.apply_async(expires=expires)
+        while expires > datetime.now():
+            if task.ready() and task.result == True:
+                finished = str(time() - now)
+                return 'celery', { 'success': True, 'time':finished }
+            sleep(0.25)
+        return 'celery', { 'success': False }
+    except Exception:
+        return 'celery', { 'success': False }
