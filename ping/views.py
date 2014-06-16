@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse
 from django.conf import settings
 from django.utils import simplejson
@@ -28,7 +30,7 @@ def status(request):
 
     if request.GET.get('fmt') == 'json':
         try:
-            response = simplejson.dumps(response_dict)
+            response = json.dumps(response_dict)
         except UnboundLocalError:
             response_dict = checks(request)
             response = simplejson.dumps(response_dict)
