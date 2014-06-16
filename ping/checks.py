@@ -88,7 +88,7 @@ def check_cache_get(request):
 # User
 def check_user_exists(request):
     try:
-        username = request.GET.get('username')
+        username = getattr(settings, 'PING_KNOWN_USER_EXISTS', request.GET.get('username'))
         get_user_model().objects.get(username=username)
         return 'user_exists', True
     except:
