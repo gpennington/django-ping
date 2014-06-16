@@ -11,7 +11,7 @@ def checks(request):
     for that check.
     """
     response_dict = {}
-    
+
     #Taken straight from Django
     #If there is a better way, I don't know it
     for path in getattr(settings, 'PING_CHECKS', PING_DEFAULT_CHECKS):
@@ -25,7 +25,7 @@ def checks(request):
                 func = getattr(mod, attr)
             except AttributeError:
                 raise ImproperlyConfigured('Module "%s" does not define a "%s" callable' % (module, attr))
-            
+
             key, value = func(request)
             response_dict[key] = value
 
@@ -33,7 +33,7 @@ def checks(request):
 
 #DEFAULT SYSTEM CHECKS
 
-#Database    
+#Database
 def check_database_sessions(request):
     from django.contrib.sessions.models import Session
     try:
@@ -55,7 +55,7 @@ def check_database_sites(request):
 CACHE_KEY = 'django-ping-test'
 CACHE_VALUE = 'abc123'
 
-def check_cache_set(request):        
+def check_cache_set(request):
     from django.core.cache import cache
     try:
         cache.set(CACHE_KEY, CACHE_VALUE, 30)
@@ -63,7 +63,7 @@ def check_cache_set(request):
     except:
         return 'cache_set', False
 
-def check_cache_get(request):        
+def check_cache_get(request):
     from django.core.cache import cache
     try:
         data = cache.get(CACHE_KEY)
@@ -76,10 +76,10 @@ def check_cache_get(request):
 
 
 #User
-def check_user_exists(request):        
+def check_user_exists(request):
     from django.contrib.auth.models import User
     try:
-        username = request.GET.get('username')
+        username = request.GET.get(getattr(settings, 'PING_USER_EXISTS', 'username'))
         u = User.objects.get(username=username)
         return 'user_exists', True
     except:
@@ -95,7 +95,7 @@ def check_celery(request):
     now = time()
     datetimenow = datetime.now()
     expires = datetimenow + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
-    
+
     try:
         task = sample_task.apply_async(expires=expires)
         while expires > datetime.now():
