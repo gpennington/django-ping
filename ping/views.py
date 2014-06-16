@@ -1,6 +1,7 @@
+import json
+
 from django.http import HttpResponse
 from django.conf import settings
-from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
@@ -14,10 +15,10 @@ def status(request):
     """
     Returns a simple HttpResponse
     """
-        
+
     response = "<h1>%s</h1>" % getattr(settings, 'PING_DEFAULT_RESPONSE', PING_DEFAULT_RESPONSE)
-    mimetype = getattr(settings, 'PING_DEFAULT_MIMETYPE', PING_DEFAULT_MIMETYPE)
-    
+    content_type = getattr(settings, 'PING_DEFAULT_CONTENT_TYPE', PING_DEFAULT_CONTENT_TYPE)
+
     if request.GET.get('checks') == 'true':
         response_dict = checks(request)
         response += "<dl>"
@@ -28,11 +29,11 @@ def status(request):
 
     if request.GET.get('fmt') == 'json':
         try:
-            response = simplejson.dumps(response_dict)
+            response = json.dumps(response_dict)
         except UnboundLocalError:
             response_dict = checks(request)
             response = simplejson.dumps(response_dict)
         response = simplejson.dumps(response_dict, sort_keys=True)
-        mimetype = 'application/json'  
+        content_type = 'application/json'
 
-    return HttpResponse(response, mimetype=mimetype, status=200)
+    return HttpResponse(response, content_type=content_type, status=200)
