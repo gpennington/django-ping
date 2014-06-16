@@ -2,7 +2,12 @@ from django.conf import settings
 from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 
+from django.contrib.auth import get_user_model
+
 from ping.defaults import PING_DEFAULT_CHECKS, PING_CELERY_TIMEOUT
+
+
+AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
 
 
 def checks(request):
@@ -82,10 +87,9 @@ def check_cache_get(request):
 
 # User
 def check_user_exists(request):
-    from django.contrib.auth.models import User
     try:
-        username = request.GET.get(getattr(settings, 'PING_USER_EXISTS', 'username'))
-        User.objects.get(username=username)
+        username = request.GET.get('username')
+        get_user_model().objects.get(username=username)
         return 'user_exists', True
     except:
         return 'user_exists', False
