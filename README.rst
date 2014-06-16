@@ -1,7 +1,7 @@
 Django Ping
 ===========
 
-Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It 
+Django Ping is utility that provides a lightweight endpoint for availability and uptime monitoring services. It
 also provides hooks for testing stack components and reporting them via JSON.
 
 Current Version: 0.3.0
@@ -25,12 +25,12 @@ Hitting the endpoint returns a simple status 200 response.
 You can customize the message by adding to your Django settings::
 
     PING_DEFAULT_RESPONSE = "All systems go!"
-    PING_DEFAULT_MIMETYPE = 'text/html'
+    PING_DEFAULT_CONTENT_TYPE = 'text/html'
 
 Hitting the url::
 
     /ping
-    
+
 displays::
 
     All systems go!
@@ -47,7 +47,7 @@ a series of status checks and reports the results.
 For example::
 
     /ping?checks=true
-    
+
 displays::
 
     Your site is up!
@@ -74,7 +74,7 @@ Specifying a ``fmt`` parameter to ``json`` returns more detailed and serialized 
 For example::
 
     /ping?fmt=json
-    
+
 displays::
 
     {

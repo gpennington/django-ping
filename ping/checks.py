@@ -2,7 +2,13 @@ from django.conf import settings
 from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 
-from ping.defaults import *
+from django.contrib.auth import get_user_model
+
+from ping.defaults import PING_DEFAULT_CHECKS, PING_CELERY_TIMEOUT
+
+
+AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
+
 
 def checks(request):
     """
@@ -11,9 +17,9 @@ def checks(request):
     for that check.
     """
     response_dict = {}
-    
-    #Taken straight from Django
-    #If there is a better way, I don't know it
+
+    # Taken straight from Django
+    # If there is a better way, I don't know it
     for path in getattr(settings, 'PING_CHECKS', PING_DEFAULT_CHECKS):
             i = path.rfind('.')
             module, attr = path[:i], path[i+1:]
@@ -25,37 +31,40 @@ def checks(request):
                 func = getattr(mod, attr)
             except AttributeError:
                 raise ImproperlyConfigured('Module "%s" does not define a "%s" callable' % (module, attr))
-            
+
             key, value = func(request)
             response_dict[key] = value
 
     return response_dict
 
-#DEFAULT SYSTEM CHECKS
 
-#Database    
+# DEFAULT SYSTEM CHECKS
+
+# Database
 def check_database_sessions(request):
     from django.contrib.sessions.models import Session
     try:
-        session = Session.objects.all()[0]
+        Session.objects.all()[0]
         return 'db_sessions', True
     except:
         return 'db_sessions', False
 
+
 def check_database_sites(request):
     from django.contrib.sites.models import Site
     try:
-        session = Site.objects.all()[0]
+        Site.objects.all()[0]
         return 'db_site', True
     except:
         return 'db_site', False
 
 
-#Caching
+# Caching
 CACHE_KEY = 'django-ping-test'
 CACHE_VALUE = 'abc123'
 
-def check_cache_set(request):        
+
+def check_cache_set(request):
     from django.core.cache import cache
     try:
         cache.set(CACHE_KEY, CACHE_VALUE, 30)
@@ -63,7 +72,8 @@ def check_cache_set(request):
     except:
         return 'cache_set', False
 
-def check_cache_get(request):        
+
+def check_cache_get(request):
     from django.core.cache import cache
     try:
         data = cache.get(CACHE_KEY)
@@ -75,18 +85,17 @@ def check_cache_get(request):
         return 'cache_get', False
 
 
-#User
-def check_user_exists(request):        
-    from django.contrib.auth.models import User
+# User
+def check_user_exists(request):
     try:
-        username = request.GET.get('username')
-        u = User.objects.get(username=username)
+        username = getattr(settings, 'PING_KNOWN_USER_EXISTS', request.GET.get('username'))
+        get_user_model().objects.get(username=username)
         return 'user_exists', True
     except:
         return 'user_exists', False
 
 
-#Celery
+# Celery
 def check_celery(request):
     from datetime import datetime, timedelta
     from time import sleep, time
@@ -95,14 +104,14 @@ def check_celery(request):
     now = time()
     datetimenow = datetime.now()
     expires = datetimenow + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
-    
+
     try:
         task = sample_task.apply_async(expires=expires)
         while expires > datetime.now():
-            if task.ready() and task.result == True:
+            if task.ready() and task.result is True:
                 finished = str(time() - now)
-                return 'celery', { 'success': True, 'time':finished }
+                return 'celery', {'success': True, 'time': finished}
             sleep(0.25)
-        return 'celery', { 'success': False }
+        return 'celery', {'success': False}
     except Exception:
-        return 'celery', { 'success': False }
+        return 'celery', {'success': False}
