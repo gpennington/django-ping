@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
-from ping.defaults import PING_DEFAULT_RESPONSE, PING_DEFAULT_MIMETYPE
+from ping.defaults import PING_DEFAULT_RESPONSE, PING_DEFAULT_CONTENT_TYPE
 from ping.checks import checks
 from ping.decorators import http_basic_auth
 
