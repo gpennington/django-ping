@@ -79,7 +79,7 @@ def check_cache_get(request):
 def check_user_exists(request):
     from django.contrib.auth.models import User
     try:
-        username = request.GET.get(getattr(settings, 'PING_USER_EXISTS', 'username'))
+        username = getattr(settings, 'PING_KNOWN_USER_EXISTS', request.GET.get('username'))
         u = User.objects.get(username=username)
         return 'user_exists', True
     except:
