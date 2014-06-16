@@ -2,7 +2,13 @@ from django.conf import settings
 from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
 
-from ping.defaults import *
+from django.contrib.auth import get_user_model
+
+from ping.defaults import PING_DEFAULT_CHECKS, PING_CELERY_TIMEOUT
+
+
+AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
+
 
 def checks(request):
     """
@@ -11,7 +17,7 @@ def checks(request):
     for that check.
     """
     response_dict = {}
-    
+
     #Taken straight from Django
     #If there is a better way, I don't know it
     for path in getattr(settings, 'PING_CHECKS', PING_DEFAULT_CHECKS):
@@ -25,7 +31,7 @@ def checks(request):
                 func = getattr(mod, attr)
             except AttributeError:
                 raise ImproperlyConfigured('Module "%s" does not define a "%s" callable' % (module, attr))
-            
+
             key, value = func(request)
             response_dict[key] = value
 
@@ -33,7 +39,7 @@ def checks(request):
 
 #DEFAULT SYSTEM CHECKS
 
-#Database    
+#Database
 def check_database_sessions(request):
     from django.contrib.sessions.models import Session
     try:
@@ -55,7 +61,7 @@ def check_database_sites(request):
 CACHE_KEY = 'django-ping-test'
 CACHE_VALUE = 'abc123'
 
-def check_cache_set(request):        
+def check_cache_set(request):
     from django.core.cache import cache
     try:
         cache.set(CACHE_KEY, CACHE_VALUE, 30)
@@ -63,7 +69,7 @@ def check_cache_set(request):
     except:
         return 'cache_set', False
 
-def check_cache_get(request):        
+def check_cache_get(request):
     from django.core.cache import cache
     try:
         data = cache.get(CACHE_KEY)
@@ -75,12 +81,11 @@ def check_cache_get(request):
         return 'cache_get', False
 
 
-#User
-def check_user_exists(request):        
-    from django.contrib.auth.models import User
+# User
+def check_user_exists(request):
     try:
         username = request.GET.get('username')
-        u = User.objects.get(username=username)
+        get_user_model().objects.get(username=username)
         return 'user_exists', True
     except:
         return 'user_exists', False
@@ -95,7 +100,7 @@ def check_celery(request):
     now = time()
     datetimenow = datetime.now()
     expires = datetimenow + timedelta(seconds=getattr(settings, 'PING_CELERY_TIMEOUT', PING_CELERY_TIMEOUT))
-    
+
     try:
         task = sample_task.apply_async(expires=expires)
         while expires > datetime.now():
