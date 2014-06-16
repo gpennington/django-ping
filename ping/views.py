@@ -2,7 +2,6 @@ import json
 
 from django.http import HttpResponse
 from django.conf import settings
-from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
 from ping.defaults import PING_DEFAULT_RESPONSE, PING_DEFAULT_CONTENT_TYPE
@@ -33,8 +32,8 @@ def status(request):
             response = json.dumps(response_dict)
         except UnboundLocalError:
             response_dict = checks(request)
-            response = simplejson.dumps(response_dict)
-        response = simplejson.dumps(response_dict, sort_keys=True)
+            response = json.dumps(response_dict)
+        response = json.dumps(response_dict, sort_keys=True)
         content_type = 'application/json'
 
     return HttpResponse(response, content_type=content_type, status=200)
