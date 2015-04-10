@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.conf import settings
-from django.utils import simplejson
+try:
+    from django.utils import simplejson
+except ImportError:
+    import json as simplejson
 from django.contrib.auth.decorators import login_required
 
 from ping.defaults import *
@@ -33,4 +36,4 @@ def status(request):
         response = simplejson.dumps(response_dict)
         mimetype = 'application/json'  
 
-    return HttpResponse(response, mimetype=mimetype, status=200)
+    return HttpResponse(response, content_type=mimetype, status=200)
