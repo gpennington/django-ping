@@ -57,7 +57,7 @@ displays::
 By default, Django Ping tests that your Database is responding
 by using supplying two tests.  You can supply your own tests
 to make sure everything is responding as expected. If you don't
-use database sessions or the contrib.sites app, you can removed
+use database sessions or the contrib.sites app, you can
 remove the ones you don't need.
 
 To customize, include a tuple in your Django settings::
